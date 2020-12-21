@@ -1,0 +1,11 @@
+**/__pycache__/
+.*
+!.gitignore
+img/
+log/
+*.png
+*.jpg
+.idea
+*pth*
+*.PNG
+checkpoints
