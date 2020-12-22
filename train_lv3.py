@@ -71,7 +71,6 @@ def train(args):
             loss.backward()
             optimizer.step()
             average_loss.update(loss)
-            print(loss)
             if global_step % args.save_every == 0:
                 print(len(average_loss._cache))
                 if average_loss.get_value() < best_loss:

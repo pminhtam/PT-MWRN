@@ -72,7 +72,7 @@ def train(args):
             x2 = DWT(x1).to(device)
             x3 = DWT(x2).to(device)
             pred, img_lv2, img_lv3 = model(noise)
-            print(pred.size())
+            # print(pred.size())
             loss_pred = loss_basic(pred, gt)
             scale_loss_lv2 = loss_basic(x2,img_lv2)
             scale_loss_lv3 = loss_basic(x3,img_lv3)
@@ -81,7 +81,6 @@ def train(args):
             loss.backward()
             optimizer.step()
             average_loss.update(loss)
-            print(loss)
             if global_step % args.save_every == 0:
                 print(len(average_loss._cache))
                 if average_loss.get_value() < best_loss:
