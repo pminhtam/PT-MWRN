@@ -5,7 +5,7 @@ import torch.nn as nn
 class MWRN_lv1_tail(nn.Module):
     def __init__(self):
         super(MWRN_lv1_tail, self).__init__()
-        self.color_channel = 1
+        self.color_channel = 3
 
         self.conv1_tail_1 = common.BBlock(common.default_conv,256*self.color_channel,640*self.color_channel,3,bn=True)
         self.IWT = common.IWT()

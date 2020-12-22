@@ -8,7 +8,7 @@ from model.mwrn_lv2 import MWRN_lv2
 class MWRN_lv1(nn.Module):
     def __init__(self):
         super(MWRN_lv1, self).__init__()
-        self.color_channel = 1
+        self.color_channel = 3
         self.lv1_head = MWRN_lv1_head()
         self.lv2 = MWRN_lv2()
         self.lv1_tail = MWRN_lv1_tail()
@@ -20,11 +20,11 @@ class MWRN_lv1(nn.Module):
         y1 = self.DWT(img)
         lv1_head_out_0, lv1_head_out = self.lv1_head(y1)
         y2 = self.DWT(y1)
-        lv2_out, img_lv2 = self.lv2(y2,lv1_head_out)
+        lv2_out, img_lv2, img_lv3 = self.lv2(y2,lv1_head_out)
         lv1_out = self.lv1_tail(lv2_out, lv1_head_out_0)
         pred = y1 + lv1_out
         pred = self.IWT(pred)
-        return pred
+        return pred , img_lv2, img_lv3
 
 if __name__ == "__main__":
     model = MWRN_lv1()

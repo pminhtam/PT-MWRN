@@ -1,12 +1,12 @@
 import torch
 import argparse
-from model.mwrn_lv1 import MWRN_lv1
+from model.mwrn_lv3 import MWRN_lv3
 from torch.utils.data import DataLoader
 from loss.loss import BasicLoss
 import os
+# import h5py
 from data.data_provider import SingleLoader
 import torch.optim as optim
-from torch.optim import lr_scheduler
 import numpy as np
 from utils.metric import calculate_psnr
 from utils.training_util import save_checkpoint,MovingAverage, load_checkpoint
@@ -28,7 +28,7 @@ def train(args):
     checkpoint_dir = args.checkpoint
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
-    model = MWRN_lv1().to(device)
+    model = MWRN_lv3().to(device)
     optimizer = optim.Adam(
         model.parameters(),
         lr=1e-4
@@ -37,24 +37,13 @@ def train(args):
     global_step = 0
     average_loss = MovingAverage(args.save_every)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    if args.checkpoint2 != "":
-        if device == 'cuda':
-            checkpoint2 = torch.load(args.checkpoint2)
-        else:
-            checkpoint2 = torch.load(args.checkpoint2, map_location=torch.device('cpu'))
-        state_dict2 = checkpoint2['state_dict']
-        model.lv2.load_state_dict(state_dict2)
-        print("load lv2 done ....")
     try:
         checkpoint = load_checkpoint(checkpoint_dir, device == 'cuda', 'latest')
         start_epoch = checkpoint['epoch']
         global_step = checkpoint['global_iter']
         best_loss = checkpoint['best_loss']
         state_dict = checkpoint['state_dict']
-        # new_state_dict = OrderedDict()
-        # for k, v in state_dict.items():
-        #     name = "model."+ k  # remove `module.`
-        #     new_state_dict[name] = v
+
         model.load_state_dict(state_dict)
         optimizer.load_state_dict(checkpoint['optimizer'])
         print('=> loaded checkpoint (epoch {}, global_step {})'.format(start_epoch, global_step))
@@ -71,12 +60,13 @@ def train(args):
             x1 = DWT(gt).to(device)
             x2 = DWT(x1).to(device)
             x3 = DWT(x2).to(device)
-            pred, img_lv2, img_lv3 = model(noise)
-            print(pred.size())
-            loss_pred = loss_basic(pred, gt)
-            scale_loss_lv2 = loss_basic(x2,img_lv2)
+
+            y1 = DWT(noise).to(device)
+            y2 = DWT(y1).to(device)
+            y3 = DWT(y2).to(device)
+            lv3_out, img_lv3 = model(y3,None)
             scale_loss_lv3 = loss_basic(x3,img_lv3)
-            loss = loss_pred+ scale_loss_lv2 + scale_loss_lv3
+            loss = scale_loss_lv3
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -98,7 +88,6 @@ def train(args):
                 }
                 save_checkpoint(save_dict, is_best, checkpoint_dir, global_step)
             if global_step % args.loss_every == 0:
-                print(global_step, "PSNR  : ", calculate_psnr(pred, gt))
                 print(average_loss.get_value())
             global_step += 1
 
@@ -116,12 +105,10 @@ if __name__ == "__main__":
     parser.add_argument('--restart','-r' ,  action='store_true', help='Whether to remove all old files and restart the training process')
     parser.add_argument('--num_workers', '-nw', default=2, type=int, help='number of workers in data loader')
     parser.add_argument('--cuda', '-c', action='store_true', help='whether to train on the GPU')
-    parser.add_argument('--checkpoint', '-ckpt', type=str, default='checkpoint/lv1',
+    parser.add_argument('--checkpoint', '-ckpt', type=str, default='checkpoint/lv3',
                         help='the checkpoint to eval')
-    parser.add_argument('--checkpoint2', '-ckpt2', type=str, default='checkpoint/lv2/model_best.pth.tar',
-                        help='the checkpoint lv 2')
     parser.add_argument('--color','-cl' , default=True, action='store_true')
-    parser.add_argument('--load_type', "-l" ,default="best", type=str, help='Load type best_or_latest ')
+    parser.add_argument('--load_type', "-l", default="best", type=str, help='Load type best_or_latest ')
 
     args = parser.parse_args()
     #

@@ -5,7 +5,7 @@ import torch.nn as nn
 class MWRN_lv1_head(nn.Module):
     def __init__(self):
         super(MWRN_lv1_head, self).__init__()
-        self.color_channel = 1
+        self.color_channel = 3
 
         self.conv1_head_1 = common.BBlock(common.default_conv,4*self.color_channel,160*self.color_channel,3,bn=True)
         self.res1_head = nn.Sequential(*[common.ResBlock(common.default_conv,160*self.color_channel,3) for i in range(4)])
