@@ -31,10 +31,9 @@ def train(args):
     model = MWRN_lv3().to(device)
     optimizer = optim.Adam(
         model.parameters(),
-        lr=1e-4
+        lr=1e-3
     )
     optimizer.zero_grad()
-    global_step = 0
     average_loss = MovingAverage(args.save_every)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     try:
