@@ -85,7 +85,7 @@ def train(args):
             average_loss.update(loss)
             # print(loss)
             if global_step % args.save_every == 0:
-                print("Save : ",epoch ," with avg loss : ",average_loss.get_value() , ",   best loss : ", best_loss )
+                print("Save : epoch ",epoch ," step : ", global_step," with avg loss : ",average_loss.get_value() , ",   best loss : ", best_loss )
                 if average_loss.get_value() < best_loss:
                     is_best = True
                     best_loss = average_loss.get_value()
