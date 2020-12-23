@@ -99,6 +99,7 @@ def train(args):
                 print(global_step, "PSNR  : ", calculate_psnr(pred, gt))
                 print(average_loss.get_value())
             global_step += 1
+        print("Epoch : ", epoch , "end at step: ", global_step)
 
     # print(model)
 if __name__ == "__main__":

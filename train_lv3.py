@@ -88,6 +88,7 @@ def train(args):
             if global_step % args.loss_every == 0:
                 print(global_step,": " ,average_loss.get_value())
             global_step += 1
+        print("Epoch : ", epoch , "end at step: ", global_step)
 
     # print(model)
 if __name__ == "__main__":
