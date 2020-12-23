@@ -72,7 +72,7 @@ def train(args):
             optimizer.step()
             average_loss.update(loss)
             if global_step % args.save_every == 0:
-                print(len(average_loss._cache))
+                print("Save : ",epoch ," with avg loss : ",average_loss.get_value() , ",   best loss : ", best_loss )
                 if average_loss.get_value() < best_loss:
                     is_best = True
                     best_loss = average_loss.get_value()
@@ -87,7 +87,7 @@ def train(args):
                 }
                 save_checkpoint(save_dict, is_best, checkpoint_dir, global_step)
             if global_step % args.loss_every == 0:
-                print(average_loss.get_value())
+                print(global_step,": " ,average_loss.get_value())
             global_step += 1
 
     # print(model)

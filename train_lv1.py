@@ -82,7 +82,7 @@ def train(args):
             optimizer.step()
             average_loss.update(loss)
             if global_step % args.save_every == 0:
-                print(len(average_loss._cache))
+                print("Save : ",epoch ," with avg loss : ",average_loss.get_value() , ",   best loss : ", best_loss )
                 if average_loss.get_value() < best_loss:
                     is_best = True
                     best_loss = average_loss.get_value()
