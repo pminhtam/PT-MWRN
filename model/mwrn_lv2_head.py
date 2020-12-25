@@ -7,10 +7,10 @@ class MWRN_lv2_head(nn.Module):
         super(MWRN_lv2_head, self).__init__()
         self.color_channel = 3
 
-        self.conv2_head_1 = common.BBlock(common.default_conv,16*self.color_channel,256*self.color_channel,3,bn=True)
-        self.conv2_head_2 = common.BBlock(common.default_conv,512*self.color_channel,256*self.color_channel,3,bn=True)
-        self.res2_head = nn.Sequential(*[common.ResBlock(common.default_conv,256*self.color_channel,3) for i in range(4)])
-        self.conv2_head_3 = common.BBlock(common.default_conv,1024*self.color_channel,512*self.color_channel,3,bn=True)
+        self.conv2_head_1 = common.BBlock(common.default_conv0,16*self.color_channel,256,3,bn=True)
+        self.conv2_head_2 = common.BBlock(common.default_conv0,512,256,3,bn=True)
+        self.res2_head = nn.Sequential(*[common.ResBlock(common.default_conv0,256,3) for i in range(4)])
+        self.conv2_head_3 = common.BBlock(common.default_conv0,1024,512,3,bn=True)
 
         self.DWT = common.DWT()
 

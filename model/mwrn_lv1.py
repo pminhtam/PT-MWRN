@@ -29,4 +29,5 @@ class MWRN_lv1(nn.Module):
 if __name__ == "__main__":
     model = MWRN_lv1()
     from torchsummary import summary
-    summary(model,(1,256,256))
+    print(model)
+    summary(model,(3,256,256))

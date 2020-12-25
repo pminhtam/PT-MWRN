@@ -6,6 +6,10 @@ import torch.nn.functional as F
 
 from torch.autograd import Variable
 
+def default_conv0(in_channels, out_channels, kernel_size, bias=True,):
+    return nn.Conv2d(
+        in_channels, out_channels, kernel_size,
+        padding=(kernel_size // 2) , bias=bias)
 
 def default_conv(in_channels, out_channels, kernel_size, bias=True, dilation=1):
     return nn.Conv2d(
@@ -201,7 +205,7 @@ class BBlock(nn.Module):
         self.res_scale = res_scale
 
     def forward(self, x):
-        x = self.body(x).mul(self.res_scale)
+        x = self.body(x)
         return x
 
 

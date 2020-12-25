@@ -7,10 +7,10 @@ class MWRN_lv3(nn.Module):
         super(MWRN_lv3, self).__init__()
         self.color_channel = 3
 
-        self.conv3_1 = common.BBlock(common.default_conv,64*self.color_channel,512*self.color_channel,3,bn=True)
-        self.conv3_2 = common.BBlock(common.default_conv,1024*self.color_channel,512*self.color_channel,3,bn=True)
-        self.res3 = nn.Sequential(*[common.ResBlock(common.default_conv,512*self.color_channel,3) for i in range(8)])
-        self.conv3_img = common.BBlock(common.default_conv,512*self.color_channel,64*self.color_channel,3,bn=True)
+        self.conv3_1 = common.BBlock(common.default_conv0,64*self.color_channel,512,3,bn=True)
+        self.conv3_2 = common.BBlock(common.default_conv0,1024,512,3,bn=True)
+        self.res3 = nn.Sequential(*[common.ResBlock(common.default_conv0,512,3) for i in range(8)])
+        self.conv3_img = common.BBlock(common.default_conv0,512,64*self.color_channel,3,bn=True)
 
 
     def forward(self, y3, lv2_head_out=None):

@@ -7,9 +7,9 @@ class MWRN_lv1_head(nn.Module):
         super(MWRN_lv1_head, self).__init__()
         self.color_channel = 3
 
-        self.conv1_head_1 = common.BBlock(common.default_conv,4*self.color_channel,160*self.color_channel,3,bn=True)
-        self.res1_head = nn.Sequential(*[common.ResBlock(common.default_conv,160*self.color_channel,3) for i in range(4)])
-        self.conv1_head_2 = common.BBlock(common.default_conv,640*self.color_channel,256*self.color_channel,3,bn=True)
+        self.conv1_head_1 = common.BBlock(common.default_conv0,4*self.color_channel,160,3,bn=True)
+        self.res1_head = nn.Sequential(*[common.ResBlock(common.default_conv0,160,3) for i in range(4)])
+        self.conv1_head_2 = common.BBlock(common.default_conv0,640,256,3,bn=True)
 
         self.DWT = common.DWT()
 
