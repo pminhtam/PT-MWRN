@@ -11,6 +11,7 @@ import numpy as np
 from utils.metric import calculate_psnr
 from utils.training_util import save_checkpoint,MovingAverage, load_checkpoint
 from model import common
+import torch.nn as nn
 def train(args):
     # torch.set_num_threads(4)
     # torch.manual_seed(args.seed)
@@ -33,6 +34,7 @@ def train(args):
         model.parameters(),
         lr=1e-3
     )
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, [5, 10, 15, 20, 25, 30], 0.5)
     optimizer.zero_grad()
     average_loss = MovingAverage(args.save_every)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -52,6 +54,9 @@ def train(args):
         best_loss = np.inf
         print('=> no checkpoint file to be loaded.')
     DWT = common.DWT()
+    param = [x for name, x in model.named_parameters()]
+    clip_grad_D = 1e4
+    grad_norm_D = 0
     for epoch in range(start_epoch, args.epoch):
         for step, (noise, gt) in enumerate(data_loader):
             noise = noise.to(device)
@@ -68,6 +73,8 @@ def train(args):
             loss = scale_loss_lv3
             optimizer.zero_grad()
             loss.backward()
+            total_norm_D = nn.utils.clip_grad_norm_(param, clip_grad_D)
+            grad_norm_D = (grad_norm_D * (step / (step + 1)) + total_norm_D / (step + 1))
             optimizer.step()
             average_loss.update(loss)
             if global_step % args.save_every == 0:
@@ -88,6 +95,8 @@ def train(args):
             if global_step % args.loss_every == 0:
                 print(global_step,": " ,average_loss.get_value())
             global_step += 1
+        clip_grad_D = min(clip_grad_D, grad_norm_D)
+        scheduler.step()
         print("Epoch : ", epoch , "end at step: ", global_step)
 
     # print(model)
